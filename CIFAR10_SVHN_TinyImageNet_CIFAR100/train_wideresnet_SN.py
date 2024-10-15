@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader,random_split, Dataset
 import torch.nn.functional as F
 from datetime import datetime
 from torch.optim.lr_scheduler import MultiStepLR
-from model_archi_wideresnet_SN import wrn
+from archi.model_archi_wideresnet_SN import wrn
 
 
 data_dir = 'dataset'
