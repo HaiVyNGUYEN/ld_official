@@ -20,12 +20,6 @@ import math
 from sklearn.cluster import KMeans
 
 
-### Downloading dataset
-
-# data_dir = './dataset'
-# train_dataset = torchvision.datasets.FashionMNIST(data_dir, train=True, download=True)
-# test_dataset  = torchvision.datasets.FashionMNIST(data_dir, train=False, download=True)
-
 
 ### Calculate mean and std
 
