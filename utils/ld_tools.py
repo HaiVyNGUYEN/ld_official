@@ -5,6 +5,7 @@ import math
 from scipy.spatial import  distance_matrix
 from scipy.sparse.csgraph import shortest_path
 import random
+import torch
 
 
 def lens_depth_function(dist_mat):
