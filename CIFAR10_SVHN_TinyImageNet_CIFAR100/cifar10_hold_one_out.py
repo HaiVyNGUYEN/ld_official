@@ -285,41 +285,41 @@ def accuracy_evaluation(dataloader, model):
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 ## Defining optimizer and loss functions 
-# for i in range(1,6):
-#     print(('Try ',i))
-#     model = ResNet18_3().to(device)
-#     #print(model)
+for i in range(1,6):
+    print(('Try ',i))
+    model = ResNet18_3().to(device)
+    #print(model)
 
-#     optimizer = torch.optim.SGD(model.parameters(), lr=0.1,
-#                                     momentum=0.9, nesterov=True, weight_decay=5e-4)
-#     scheduler = MultiStepLR(optimizer, milestones=[60, 120, 160], gamma=0.2)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.1,
+                                    momentum=0.9, nesterov=True, weight_decay=5e-4)
+    scheduler = MultiStepLR(optimizer, milestones=[60, 120, 160], gamma=0.2)
 
-#     loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss()
 
-#     train_batch_loss = []
-#     train_batch_accuracy = []
-#     valid_batch_accuracy = []
-#     valid_batch_loss = []
-#     train_epoch_no = []
-#     valid_epoch_no = []
-#     epochs = 200
-#     from datetime import datetime
-#     now = datetime.now()
-#     for t in range(epochs):
-#         print(f"Epoch {t+1}\n-------------------------------")
-#         _train_batch_loss , _train_batch_accuracy = train(train_loader, model, loss_fn, optimizer)
-#         _valid_batch_loss , _valid_batch_accuracy, correct_temp = validation(test_loader, model, loss_fn)
+    train_batch_loss = []
+    train_batch_accuracy = []
+    valid_batch_accuracy = []
+    valid_batch_loss = []
+    train_epoch_no = []
+    valid_epoch_no = []
+    epochs = 200
+    from datetime import datetime
+    now = datetime.now()
+    for t in range(epochs):
+        print(f"Epoch {t+1}\n-------------------------------")
+        _train_batch_loss , _train_batch_accuracy = train(train_loader, model, loss_fn, optimizer)
+        _valid_batch_loss , _valid_batch_accuracy, correct_temp = validation(test_loader, model, loss_fn)
 
-#         if (t+1)%5==0:
-#             print(datetime.now()-now)
+        if (t+1)%5==0:
+            print(datetime.now()-now)
 
-#         scheduler.step()
+        scheduler.step()
 
-#     torch.save(model.state_dict(), f'./cifar10_hold_one_out_resnet18_200_epochs_{i}')
+    torch.save(model.state_dict(), f'./cifar10_hold_one_out_resnet18_200_epochs_{i}')
 
-#     print(datetime.now())
+    print(datetime.now())
 
-# print("Done!")
+print("Done!")
 
 
 ### LD method
