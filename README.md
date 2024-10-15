@@ -30,11 +30,11 @@ Besides, for toydataset and proof-of-concept, we simulate dataset using python l
 
 ## Running
 
-To make it easier for practitioners, we intentionally make three 4 independent directories:
+To make it easier for practitioners, we intentionally make 4 independent directories:
 1. [background_toy_dataset](https://github.com/HaiVyNGUYEN/ld_official/tree/master/background_toy_dataset): all the codes are in notebooks, so that we can demonstrate how the method works step by step. Besides, this aims to make sure that the method work correctly in 2D space with visual results.
 2. [MNIST_FashionMNIST](https://github.com/HaiVyNGUYEN/ld_official/tree/master/MNIST_FashionMNIST): all the codes for conducting experiments related to MNIST vs FashionMNIST.
 3. [CIFAR10_SVHN_TinyImageNet_CIFAR100](https://github.com/HaiVyNGUYEN/ld_official/tree/master/CIFAR10_SVHN_TinyImageNet_CIFAR100): same for CFAR10 vs SVHN/CIFAR100/TinyImageNet.
-4. [CIFAR100](https://github.com/HaiVyNGUYEN/ld_official/tree/master/CIFAR100): same for CFAR100 vs TinyImageNet.
+4. [CIFAR100](https://github.com/HaiVyNGUYEN/ld_official/tree/master/CIFAR100): same for CIFAR100 vs TinyImageNet.
 
 The codes in each of these directories can be runned independently. However, we strongly recommend to start by [background_toy_dataset](https://github.com/HaiVyNGUYEN/LD/tree/master/background_toy_dataset) for a good understanding of method as well as to know how to correctly use our method.
 
