@@ -1,13 +1,6 @@
-import numpy as np # this module is useful to work with numerical arrays
-import pandas as pd
-import random
-import torch
 import torchvision
-from torchvision import transforms
-from torch.utils.data import DataLoader,random_split
-from torch import nn
-import torch.nn.functional as F
-import torch.optim as optim
+
+
 data_dir = './dataset'
 
 # download fashionMNIST
