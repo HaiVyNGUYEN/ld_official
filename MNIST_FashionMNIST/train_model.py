@@ -4,30 +4,21 @@ current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
 from utils.training_tools import train, validation, copy_state_dict
 
-import numpy as np # this module is useful to work with numerical arrays
-import random
 import torch
 import torchvision
 from torchvision import transforms
-from torch.utils.data import DataLoader,random_split
+from torch.utils.data import DataLoader, random_split
 from torch import nn
-import torch.nn.functional as F
-import torch.optim as optim
+from torch.optim.lr_scheduler import StepLR
 from model_archi import MyOwnNeuralNetwork
 
 
 data_dir = './dataset'
 train_dataset = torchvision.datasets.FashionMNIST(data_dir, train=True, download=False)
 test_dataset  = torchvision.datasets.FashionMNIST(data_dir, train=False, download=False)
-train_transform = transforms.Compose([
-                               torchvision.transforms.ToTensor(),
-                               torchvision.transforms.Normalize(
-                                 (0.286,), (0.3205,))])
+train_transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.286,), (0.3205,))])
 
-test_transform = transforms.Compose([
-                               torchvision.transforms.ToTensor(),
-                               torchvision.transforms.Normalize(
-                                 (0.286,), (0.3205,))])
+test_transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.286,), (0.3205,))])
 
 train_dataset.transform = train_transform
 test_dataset.transform = test_transform
@@ -37,17 +28,14 @@ m=len(train_dataset)
 train_data, val_data = random_split(train_dataset, [50000, 10000])
 batch_size = 128
 
-train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size)
-valid_loader = torch.utils.data.DataLoader(val_data, batch_size=batch_size)
-test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,shuffle=True)
+train_loader = DataLoader(train_data, batch_size=batch_size)
+valid_loader = DataLoader(val_data, batch_size=batch_size)
+test_loader = DataLoader(test_dataset, batch_size=batch_size,shuffle=True)
 
     
 # Get cpu or gpu device for training.
 device = "cuda" if torch.cuda.is_available() else "cpu"
 #print(f"Using {device} device")
-
-
-from torch.optim.lr_scheduler import StepLR
 
 for i in range(5):
     
