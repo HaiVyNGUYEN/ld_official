@@ -4,13 +4,14 @@ current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
 from utils.training_tools import train, validation
 
+from model_archi.model_archi_wideresnet_SN import wrn
+
 import torchvision
 from torchvision import transforms
 from torch.utils.data import DataLoader,random_split, Dataset
 import torch.nn.functional as F
 from datetime import datetime
 from torch.optim.lr_scheduler import MultiStepLR
-from model_archi_wideresnet_SN import wrn
 import torch
 from torch import nn
 
