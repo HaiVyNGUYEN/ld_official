@@ -3,6 +3,7 @@ import os
 current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
 from utils.training_tools import train, validation, copy_state_dict
+from model_archi.fashion_mnist_archi import MyOwnNeuralNetwork
 
 import torch
 import torchvision
@@ -10,7 +11,6 @@ from torchvision import transforms
 from torch.utils.data import DataLoader, random_split
 from torch import nn
 from torch.optim.lr_scheduler import StepLR
-from model_archi import MyOwnNeuralNetwork
 
 
 data_dir = './dataset'
