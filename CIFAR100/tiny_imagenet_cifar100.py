@@ -2,7 +2,10 @@ import sys
 import os
 current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
+
 from utils.ld_tools import *
+from model_archi.model_archi_wideresnet_SN import wrn
+
 import random 
 import torch
 import torchvision
@@ -13,7 +16,6 @@ from datetime import datetime
 from sklearn import metrics
 from tinyimagenet import TinyImageNet
 from pathlib import Path
-from model_archi_wideresnet_SN import wrn
 
 
 
