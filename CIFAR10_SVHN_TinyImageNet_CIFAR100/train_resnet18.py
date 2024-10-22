@@ -2,7 +2,9 @@ import sys
 import os
 current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
+
 from utils.training_tools import train
+from model_archi.model_archi_resnet18 import ResNet18_3
 
 import torch
 from torch import nn
@@ -12,7 +14,6 @@ from torch.utils.data import DataLoader,random_split, Dataset
 import torch.nn.functional as F
 from datetime import datetime
 from torch.optim.lr_scheduler import MultiStepLR
-from archi.model_archi_resnet18 import ResNet18_3
 
 
 data_dir = 'dataset'
