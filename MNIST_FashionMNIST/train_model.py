@@ -37,12 +37,12 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size,shuffle=True)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 #print(f"Using {device} device")
 
-for i in range(5):
+for sim in range(5):
     
     model = MyOwnNeuralNetwork().to(device)
     print(model)
     
-    print(f"Starting to train model {i+1}...")
+    print(f"Starting to train model {sim+1}...")
 
     optimizer = torch.optim.SGD(model.parameters(), lr=0.05, momentum=0.9, weight_decay=1e-4)
     scheduler = StepLR(optimizer, step_size=10, gamma=0.2)
@@ -78,7 +78,7 @@ for i in range(5):
             valid_epoch_no.append( t + float((i+1)/len(_valid_batch_loss)))
         scheduler.step()
 
-    torch.save(state, f'./fashion_mnist_net_30_epochs_{i+1}')
+    torch.save(state, f'./fashion_mnist_net_30_epochs_{sim+1}')
 
     
     
