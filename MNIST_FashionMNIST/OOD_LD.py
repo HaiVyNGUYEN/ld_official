@@ -7,6 +7,7 @@ from model_archi.fashion_mnist_archi import MyOwnNeuralNetwork
 
 import numpy as np
 import random
+import torch
 import torchvision
 from torchvision import transforms
 from torch.utils.data import DataLoader,random_split
