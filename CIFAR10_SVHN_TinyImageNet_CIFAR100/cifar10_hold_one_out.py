@@ -2,7 +2,11 @@ import sys
 import os
 current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
+
 from utils.ld_tools import *
+from utils.training_tools import *
+from model_archi.model_archi_resnet18 import ResNet18_3
+
 import random
 import torchvision
 from torchvision import transforms
@@ -54,240 +58,13 @@ train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,shuffle=False)
 test_loader_out = torch.utils.data.DataLoader(hold_out_test_dataset, batch_size=batch_size,shuffle=False)
 
-### Defining model
-
-
-def conv3x3(in_planes, out_planes, stride=1):
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
-
-
-class BasicBlock3(nn.Module):
-    expansion = 1
-
-    def __init__(self, in_planes, planes, stride=1):
-        super(BasicBlock3, self).__init__()
-        self.conv1 = conv3x3(in_planes, planes, stride)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = conv3x3(planes, planes)
-        self.bn2 = nn.BatchNorm2d(planes)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes)
-            )
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
-        out += self.shortcut(x)
-        out = F.relu(out)
-        return out
-
-
-
-
-
-class ResNet3(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=9,inter_dim=25):
-        super(ResNet3, self).__init__()
-        self.in_planes = 64
-
-        self.conv1 = conv3x3(3,64)
-        self.bn1 = nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.linear1 = nn.Linear(512*block.expansion, inter_dim)
-        self.linear2 = nn.Linear(inter_dim,num_classes)
-        self.gap = torch.nn.AdaptiveAvgPool2d(1)
-
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
-
-    def forward_before_softmax(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = self.gap(out)
-        out = out.view(out.size(0), -1)
-        out = self.linear1(out)
-        return out
-    
-    def forward(self,x):
-        out = self.forward_before_softmax(x)
-        out = self.linear2(out)
-        return out
-
-
-def ResNet18_3(num_classes=9,inter_dim=25):
-    return ResNet3(BasicBlock3, [2,2,2,2], num_classes,inter_dim)
-    
-### Defining valid/test loop
- 
-    
-def train(dataloader, model, loss_fn, optimizer):
-
-    # Total size of dataset for reference
-    size = 0
-
-    # places your model into training mode
-    model.train()
-
-    # loss batch
-    batch_loss = {}
-    batch_accuracy = {}
-
-    correct = 0
-    _correct = 0
-
-
-
-    # Gives X , y for each batch
-    for batch, (X, y) in enumerate(dataloader):
-
-        # Converting device to cuda
-        X, y = X.to(device), y.to(device)
-        model.to(device)
-
-        # Compute prediction error / loss
-        # 1. Compute y_pred
-        # 2. Compute loss between y and y_pred using selectd loss function
-
-        y_pred = model(X)
-        loss = loss_fn(y_pred, y)
-
-        # Backpropagation on optimizing for loss
-        # 1. Sets gradients as 0
-        # 2. Compute the gradients using back_prop
-        # 3. update the parameters using the gradients from step 2
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        _correct = (y_pred.argmax(1) == y).type(torch.float).sum().item()
-        _batch_size = len(X)
-
-        correct += _correct
-
-        # Updating loss_batch and batch_accuracy
-        batch_loss[batch] = loss.item()
-        batch_accuracy[batch] = _correct/_batch_size
-
-        size += _batch_size
-
-        if batch % 100 == 0:
-            loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}]")
-
-    correct/=size
-    print(f"Train Accuracy: {(100*correct):>0.1f}%")
-
-    return batch_loss , batch_accuracy
-
-def validation(dataloader, model, loss_fn):
-
-    # Total size of dataset for reference
-    size = 0
-    num_batches = len(dataloader)
-
-    # Setting the model under evaluation mode.
-    model.eval()
-
-    test_loss, correct = 0, 0
-
-    _correct = 0
-    _batch_size = 0
-
-    batch_loss = {}
-    batch_accuracy = {}
-
-    with torch.no_grad():
-
-        # Gives X , y for each batch
-        for batch , (X, y) in enumerate(dataloader):
-
-            X, y = X.to(device), y.to(device)
-            model.to(device)
-            pred = model(X)
-            batch_loss[batch] = loss_fn(pred, y).item()
-            test_loss += batch_loss[batch]
-            _batch_size = len(X)
-
-            _correct = (pred.argmax(1) == y).type(torch.float).sum().item()
-            correct += _correct
-
-            size+=_batch_size
-            batch_accuracy[batch] = _correct/_batch_size
-
-
-
-
-    ## Calculating loss based on loss function defined
-    test_loss /= num_batches
-
-    ## Calculating Accuracy based on how many y match with y_pred
-    correct /= size
-
-    print(f"Valid Error: \n Accuracy: {(100*correct):>0.3f}%, Avg loss: {test_loss:>8f} \n")
-
-    return batch_loss , batch_accuracy, correct
-
-
-def accuracy_evaluation(dataloader, model):
-
-    # Total size of dataset for reference
-    size = 0
-    num_batches = len(dataloader)
-
-    # Setting the model under evaluation mode.
-    model.eval()
-
-    correct =  0
-
-    _correct = 0
-    _batch_size = 0
-    batch_accuracy = {}
-
-    with torch.no_grad():
-
-        # Gives X , y for each batch
-        for batch , (X, y) in enumerate(dataloader):
-
-            X, y = X.to(device), y.to(device)
-            
-            model.to(device)
-            pred = model(X)
-            
-            _batch_size = len(X)
-
-            _correct = (pred.argmax(1) == y).type(torch.float).sum().item()
-            correct += _correct
-            size+=_batch_size
-            batch_accuracy[batch] = _correct/_batch_size
-
-
-    ## Calculating Accuracy based on how many y match with y_pred
-    correct /= size
-
-    return correct
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 ## Defining optimizer and loss functions 
 for i in range(1,6):
     print(('Try ',i))
-    model = ResNet18_3().to(device)
+    model = ResNet18_3(num_classes=9).to(device)
     #print(model)
 
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1,
@@ -307,8 +84,8 @@ for i in range(1,6):
     now = datetime.now()
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
-        _train_batch_loss , _train_batch_accuracy = train(train_loader, model, loss_fn, optimizer)
-        _valid_batch_loss , _valid_batch_accuracy, correct_temp = validation(test_loader, model, loss_fn)
+        _train_batch_loss , _train_batch_accuracy = train(train_loader, model, loss_fn, optimizer, device)
+        _valid_batch_loss , _valid_batch_accuracy, correct_temp = validation(test_loader, model, loss_fn, device)
 
         if (t+1)%5==0:
             print(datetime.now()-now)
@@ -331,7 +108,7 @@ for sim in range(1,6):
     print('Try:', sim)
     # load model
     
-    model = ResNet18_3().to(device)
+    model = ResNet18_3(num_classes=9).to(device)
     model.load_state_dict(torch.load(f'./cifar10_hold_one_out_resnet18_200_epochs_{sim}'))
     model.eval()
 
