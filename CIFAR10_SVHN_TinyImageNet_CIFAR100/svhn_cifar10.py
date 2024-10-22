@@ -2,7 +2,12 @@ import sys
 import os
 current = os.path.dirname(os.path.realpath('./'))
 sys.path.append(current)
+
 from utils.ld_tools import *
+from model_archi.model_archi_resnet18_SN import resnet18
+from model_archi.model_archi_resnet18 import ResNet18_3
+from model_archi.model_archi_wideresnet_SN import wrn
+
 import random 
 import torchvision
 from torchvision import transforms
@@ -12,9 +17,6 @@ from datetime import datetime
 from sklearn import metrics
 from tinyimagenet import TinyImageNet
 from pathlib import Path
-from archi.model_archi_resnet18_SN import resnet18
-from archi.model_archi_resnet18 import ResNet18_3
-from archi.model_archi_wideresnet_SN import wrn
 
 data_dir = 'dataset'
 train_dataset = torchvision.datasets.CIFAR10(data_dir, train=True, download=False)
@@ -47,43 +49,6 @@ train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,shuffle=False)
 test_loader_out = torch.utils.data.DataLoader(test_dataset_out, batch_size=batch_size,shuffle=False)
 
-def accuracy_evaluation(dataloader, model):
-
-    # Total size of dataset for reference
-    size = 0
-    num_batches = len(dataloader)
-
-    # Setting the model under evaluation mode.
-    model.eval()
-
-    correct =  0
-
-    _correct = 0
-    _batch_size = 0
-    batch_accuracy = {}
-
-    with torch.no_grad():
-
-        # Gives X , y for each batch
-        for batch , (X, y) in enumerate(dataloader):
-
-            X, y = X.to(device), y.to(device)
-            
-            model.to(device)
-            pred = model(X)
-            
-            _batch_size = len(X)
-
-            _correct = (pred.argmax(1) == y).type(torch.float).sum().item()
-            correct += _correct
-            size+=_batch_size
-            batch_accuracy[batch] = _correct/_batch_size
-
-
-    ## Calculating Accuracy based on how many y match with y_pred
-    correct /= size
-
-    return correct
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(device)
