@@ -5,6 +5,7 @@ sys.path.append(current)
 from utils.ld_tools import *
 from model_archi.fashion_mnist_archi import MyOwnNeuralNetwork
 
+import numpy as np
 import random
 import torchvision
 from torchvision import transforms
