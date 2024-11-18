@@ -2,6 +2,8 @@
 
 This Repo contains all the files related for computing Lens Depth and for conducting experiments in the related paper.
 
+![](https://github.com/HaiVyNGUYEN/ld_official/blob/master/gif/animations.gif)
+
 ## Dependencies
 
 The code is implemented based mainly on python library Pytorch (and torchvision). All needed libraries can be found in  [requirements.txt](https://github.com/HaiVyNGUYEN/ld_official/blob/master/requirements.txt). The code is supposed to be run in Linux but can be easily adapted for other systems. We strongly recommend to create virtual environment for a proper running (such as conda virtual env). This can be easily done in linux terminal as follow:
