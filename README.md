@@ -2,7 +2,7 @@
 
 This Repo contains all the files related for computing Lens Depth and for conducting experiments in the related paper.
 
-![](https://github.com/HaiVyNGUYEN/ld_official/blob/master/gif/animations.gif)
+![Illustration in 2D](https://github.com/HaiVyNGUYEN/ld_official/blob/master/gif/animations.gif)
 
 ## Dependencies
 
